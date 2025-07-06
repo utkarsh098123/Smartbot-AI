@@ -1,0 +1,131 @@
+/* TechTutor.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #0f172a;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.techtutor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, rgba(96, 165, 250, 0.04) 0%, transparent 50%),
+              linear-gradient(135deg, #1e1e2f 0%, #0f172a 100%);
+  color: #f8fafc;
+  position: relative;
+}
+.techtutor-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 24px 24px;
+  z-index: 0;
+}
+
+.techtutor-window,
+.techtutor-header,
+.techtutor-input-bar {
+  position: relative;
+  z-index: 1;
+}
+
+.techtutor-header {
+  background: #23233b;
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #93c5fd;
+  border-bottom: 1px solid #374151;
+}
+
+.techtutor-window {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background-color: #1f1f30;
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #1f1f30;
+}
+
+.techtutor-window::-webkit-scrollbar {
+  width: 8px;
+}
+
+.techtutor-window::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 6px;
+}
+
+.techtutor-message {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.techtutor-message.user {
+  justify-content: flex-end;
+}
+
+.techtutor-message.bot {
+  justify-content: flex-start;
+}
+
+.techtutor-bubble {
+  max-width: 60%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.techtutor-message.user .techtutor-bubble {
+  background: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.techtutor-message.bot .techtutor-bubble {
+  background: #374151;
+  color: #f1f5f9;
+  border-bottom-left-radius: 0;
+}
+
+.techtutor-input-bar {
+  display: flex;
+  padding: 20px 30px;
+  background: #23233b;
+  border-top: 1px solid #374151;
+}
+
+.techtutor-input-bar textarea {
+  flex-grow: 1;
+  resize: none;
+  font-size: 1rem;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #1e293b;
+  color: #f8fafc;
+  margin-right: 20px;
+}
+
+.techtutor-input-bar button {
+  padding: 14px 24px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.techtutor-input-bar button:hover {
+  background-color: #1d4ed8;
+}
