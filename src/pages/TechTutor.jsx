@@ -1,53 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import '../styles/TechTutor.css';
-import { motion, AnimatePresence } from 'framer-motion';
+
+const suggestions = [
+  'What is a deadlock in OS?',
+  'Difference between TCP & UDP?',
+  'Create a Java login form.',
+  'What is normalization in DBMS?'
+];
 
 const TechTutor = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const chatEndRef = useRef(null);
 
-  useEffect(() => {
-    const introMessage = {
-      role: 'bot',
-      content:
-        "📘 Hello! I'm TechTutor. I can assist you with Operating Systems, DBMS, Computer Networks, and general engineering theory.",
-    };
-    setMessages([introMessage]);
-  }, []);
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const userMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+  const sendMessage = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    const newMessages = [...messages, { from: 'user', text: trimmed }];
+    setMessages(newMessages);
     setInput('');
-
-    try {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer YOUR_OPENAI_API_KEY`, // Replace securely
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [...messages, userMessage],
-        }),
-      });
-
-      const data = await res.json();
-      const botMessage = {
-        role: 'bot',
-        content: data.choices[0].message.content.trim(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'bot', content: '⚠️ TechTutor ran into a problem. Try again.' },
-      ]);
-    }
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { from: 'bot', text: 'This is a response from AI.' }]);
+    }, 500);
   };
 
   useEffect(() => {
@@ -55,39 +30,53 @@ const TechTutor = () => {
   }, [messages]);
 
   return (
-    <div className="techtutor-container">
-      <div className="techtutor-header">
-        <span role="img" aria-label="bot">📘</span>
-        <h2>TechTutor Bot</h2>
-      </div>
+    <div className="techtutor-wrapper">
+      <main className="techtutor-main">
+        <div className="hero-section">
+          <h1>TechTutor</h1>
+          <p>Your smart coding assistant for quick help & inspiration.</p>
+        </div>
 
-      <div className="techtutor-window">
-        <AnimatePresence>
-          {messages.map((msg, idx) => (
-            <motion.div
-              key={idx}
-              className={`techtutor-message ${msg.role}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="techtutor-bubble">{msg.content}</div>
-            </motion.div>
+        <div className="suggestion-section">
+          {suggestions.map((text, i) => (
+            <div className="suggestion-box" key={i} onClick={() => setInput(text)}>
+              {text}
+            </div>
           ))}
-        </AnimatePresence>
-        <div ref={chatEndRef} />
-      </div>
+        </div>
 
-      <div className="techtutor-input-bar">
-        <textarea
-          rows={2}
-          placeholder="Ask me about OS, DBMS, CN, theory concepts..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button onClick={handleSend}>Send</button>
-      </div>
+        <div className="chat-messages">
+          {messages.map((msg, i) => (
+            <div
+              key={i}
+              className={`chat-message-wrapper ${msg.from}`}
+            >
+              <motion.div
+                className={`chat-bubble ${msg.from}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {msg.text}
+              </motion.div>
+            </div>
+          ))}
+          <div ref={chatEndRef}></div>
+        </div>
+
+        <div className="chat-bar">
+          <input
+            type="text"
+            placeholder="Ask me anything..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button className="send-btn" onClick={sendMessage}>
+            ➤
+          </button>
+        </div>
+      </main>
     </div>
   );
 };

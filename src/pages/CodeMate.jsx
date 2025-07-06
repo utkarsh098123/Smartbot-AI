@@ -1,53 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import '../styles/CodeMate.css';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import '../styles/TechTutor.css';
+
+const suggestions = [
+  'Fix this JavaScript bug.',
+  'Optimize this Python loop.',
+  'Write a SQL query for joins.',
+  'Explain closures in JavaScript.'
+];
 
 const CodeMate = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const chatEndRef = useRef(null);
 
-  useEffect(() => {
-    // Intro message
-    const introMessage = {
-      role: 'bot',
-      content: "👨‍💻 Hey! I'm CodeMate. Share your code, errors, or logic and I'll help you debug it.",
-    };
-    setMessages([introMessage]);
-  }, []);
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const userMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+  const sendMessage = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    const newMessages = [...messages, { from: 'user', text: trimmed }];
+    setMessages(newMessages);
     setInput('');
-
-    try {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer YOUR_OPENAI_API_KEY`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [...messages, userMessage],
-        }),
-      });
-
-      const data = await res.json();
-      const botMessage = {
-        role: 'bot',
-        content: data.choices[0].message.content.trim(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'bot', content: '⚠️ CodeMate encountered an issue.' },
-      ]);
-    }
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { from: 'bot', text: 'Here is a code-related response from CodeMate.' }]);
+    }, 500);
   };
 
   useEffect(() => {
@@ -55,39 +30,50 @@ const CodeMate = () => {
   }, [messages]);
 
   return (
-    <div className="codemate-container">
-      <div className="codemate-header">
-        <span role="img" aria-label="bot">💡</span>
-        <h2>CodeMate Bot</h2>
-      </div>
+    <div className="techtutor-wrapper">
+      <main className="techtutor-main">
+        <div className="hero-section">
+          <h1>CodeMate</h1>
+          <p>Your AI coding companion for smarter development and debugging.</p>
+        </div>
 
-      <div className="codemate-window">
-        <AnimatePresence>
-          {messages.map((msg, idx) => (
-            <motion.div
-              key={idx}
-              className={`codemate-message ${msg.role}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="codemate-bubble">{msg.content}</div>
-            </motion.div>
+        <div className="suggestion-section">
+          {suggestions.map((text, i) => (
+            <div className="suggestion-box" key={i} onClick={() => setInput(text)}>
+              {text}
+            </div>
           ))}
-        </AnimatePresence>
-        <div ref={chatEndRef} />
-      </div>
+        </div>
 
-      <div className="codemate-input-bar">
-        <textarea
-          rows={2}
-          placeholder="Paste your code, error, or logic..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button onClick={handleSend}>Send</button>
-      </div>
+        <div className="chat-messages">
+          {messages.map((msg, i) => (
+            <div key={i} className={`chat-message-wrapper ${msg.from}`}>
+              <motion.div
+                className={`chat-bubble ${msg.from}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {msg.text}
+              </motion.div>
+            </div>
+          ))}
+          <div ref={chatEndRef}></div>
+        </div>
+
+        <div className="chat-bar">
+          <input
+            type="text"
+            placeholder="Ask for code help..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          />
+          <button className="send-btn" onClick={sendMessage}>
+            ➤
+          </button>
+        </div>
+      </main>
     </div>
   );
 };
